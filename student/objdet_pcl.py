@@ -14,7 +14,8 @@
 import cv2
 import numpy as np
 import torch
-
+import zlib
+from numpy.lib.function_base import percentile
 # add project directory to python path to enable relative imports
 import os
 import sys
@@ -62,8 +63,8 @@ def show_range_image(frame, lidar_name):
     lidarData = [obj for obj in frame.lasers if obj.name == lidar_name][0]
     # step 2 : extract the range and the intensity channel from the range image
     range_intensity = dataset_pb2.MatrixFloat()
-    range_intensity.ParseFromString(zlib.decompress(lidarData.ri_return1.range_image_compress))
-    range_intensity_np = np.array(range_intensity).reshape(range_intensity.dims)    
+    range_intensity.ParseFromString(zlib.decompress(lidarData.ri_return1.range_image_compressed))
+    range_intensity_np = np.array(range_intensity.data).reshape(range_intensity.shape.dims)    
     # step 3 : set values <0 to zero
     range_intensity_np[range_intensity_np<0] = 0.0
     # step 4 : map the range channel onto an 8-bit scale and make sure that the full range of values is appropriately considered
@@ -76,7 +77,7 @@ def show_range_image(frame, lidar_name):
     intensity_tmp = 255* np.clip(intensity_tmp,firstPercent,lastPercent)/lastPercent
     intensity_image = intensity_tmp.astype(np.uint8)
     # step 6 : stack the range and intensity image vertically using np.vstack and convert the result to an unsigned 8-bit integer
-    img_range_intensity = np.vstack(intensity_image,range_image).astype(np.uint8)
+    img_range_intensity = np.vstack((intensity_image,range_image)).astype(np.uint8)
     # img_range_intensity = [] # remove after implementing all steps
     #######
     ####### ID_S1_EX1 END #######     
