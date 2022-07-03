@@ -131,3 +131,30 @@ Parts of this project are based on the following repositories:
 
 ## License
 [License](LICENSE.md)
+### Project Overview
+This is Udacity Self Driving Nanodegree second course 3D Object Detection Midterm Project.
+## 3D Object Detection
+As in the previous course, Waymo Open Dataset will be used for this project. The Dataset contains data collected in real world and LiDAR cloud points will be used for 3D object detection.
+Dataset can be found here: https://console.cloud.google.com/storage/browser/waymo_open_dataset_v_1_2_0_individual_files
+There are requirements to achieve these goals:
+1. Converting dataset ranges channel to 8bit to visualize range and intensity image
+2. Create Bird Eye View (BEV) perspective for the points cloud which then lidar intensity values and normalized height values are applied to each BEV frame
+3. For 3d object detection, Complex Yolo(https://paperswithcode.com/paper/complex-yolo-real-time-3d-object-detection-on) and Super Fast and Accurate 3D Object Detection based on 3D LiDAR Point Clouds (https://github.com/maudzung/SFA3D) will be considered in the excersise to configure and initiate the model for Vehicles detections. Then applying Bounding Box and Polygon for each detected object
+4. Using pretrained data in tfrecords format files, calculate the Intersection over Union (IoU) with required minimum threshold, True/False Positive/Negative detections, Precision and Recall values.
+
+To use the project: execute file "python loop_over_dataset.py" with python3.
+Project reprequisite:
+python3
+numpy
+opencv-python
+protobuf
+easydict
+torch
+pillow
+matplotlib
+wxpython
+shapely
+tqdm
+open3d
+
+##Step 1: Compute LiDar cloud points from Range Image
