@@ -186,7 +186,7 @@ exec_detection = [] # options are 'bev_from_pcl', 'detect_objects', 'validate_ob
 exec_tracking = [] # options are 'perform_tracking'
 exec_visualization = ['show_pcl'] # options are 'show_range_image', 'show_bev', 'show_pcl', 'show_labels_in_image', 'show_objects_and_labels_in_bev', 'show_objects_in_bev_labels_in_camera', 'show_tracks', 'show_detection_performance', 'make_tracking_movie'
 ```
-Hera are results:
+Here are results:
 
 <img width="602" alt="ID_S1_EX2" src="https://user-images.githubusercontent.com/36104217/177055725-96ea9ffc-76f9-4093-abbd-8d8a923da10e.png">
 <img width="960" alt="ID_S1_EX2_7" src="https://user-images.githubusercontent.com/36104217/177055732-db4ef017-9369-413f-8ac0-edc9bcf2064e.png">
@@ -218,7 +218,7 @@ exec_detection = ['bev_from_pcl'] # options are 'bev_from_pcl', 'detect_objects'
 exec_tracking = [] # options are 'perform_tracking'
 exec_visualization = [] # options are 'show_range_image', 'show_bev', 'show_pcl', 'show_labels_in_image', 'show_objects_and_labels_in_bev', 'show_objects_in_bev_labels_in_camera', 'show_tracks', 'show_detection_performance', 'make_tracking_movie'
 ```
-Hera are results:
+Here are results:
 Lidar Cloud Point
 
 <img width="380" alt="ID_S2_EX1_1" src="https://user-images.githubusercontent.com/36104217/177056155-537d2d51-0061-4070-8c7a-c81ca1a39253.png">
@@ -230,3 +230,45 @@ Intensity Channel
 <img width="458" alt="ID_S2_EX2_2" src="https://user-images.githubusercontent.com/36104217/177056197-d8265ab3-1e1e-4fd4-a958-d50a7724e4e2.png">
 
 Normalized height Channel
+
+<img width="458" alt="ID_S2_EX3_2" src="https://user-images.githubusercontent.com/36104217/177056246-5ec4b24e-0323-457f-ad64-53bcc5ea83e0.png">
+<img width="458" alt="ID_S2_EX3_1" src="https://user-images.githubusercontent.com/36104217/177056247-7f1443f1-0dc7-4497-9ed2-7cf72af54692.png">
+
+## Step-3: Model Based Object Detection in BEV Image
+In this step, SFA3D model will be configured and initialized with a pretrained data to perform vehicle detections and apply bounding boxes and 3D polygons. Futher exploration to use this model can be found here: https://github.com/maudzung/SFA3D
+1. Instantiating the FPN resnet model from the cloned repository configs
+2. Extracting 3d bounding boxes from the responses
+3. Transforming the pixel to vehicle coordinates
+4. Model output tuned to the bounding box format [class-id, x, y, z, h, w, l, yaw]
+The implementation of function is done in "objdet_detect.py"
+```
+# load model-related parameters into an edict
+def load_configs_model(model_name='darknet', configs=None)
+
+# create model according to selected model type
+def create_model(configs)
+
+# detect trained objects in birds-eye view
+def detect_objects(input_bev_maps, model, configs)
+
+```
+To test for this function, in "python loop_over_dataset.py" , config as follow:
+```
+exec_detection = ['bev_from_pcl', 'detect_objects'] # options are 'bev_from_pcl', 'detect_objects', 'validate_object_labels', 'measure_detection_performance'; options not in the list will be loaded from file
+exec_tracking = [] # options are 'perform_tracking'
+exec_visualization = ['show_objects_in_bev_labels_in_camera'] # options are 'show_range_image', 'show_bev', 'show_pcl', 'show_labels_in_image', 'show_objects_and_labels_in_bev', 'show_objects_in_bev_labels_in_camera', 'show_tracks', 'show_detection_performance', 'make_tracking_movie'
+```
+Here are results:
+
+<img width="367" alt="ID_S3_EX1-5_1" src="https://user-images.githubusercontent.com/36104217/177056448-a957dfa6-f58f-464e-8b67-54dbb150b9c0.png">
+<img width="460" alt="ID_S3_EX1-5_2" src="https://user-images.githubusercontent.com/36104217/177056450-6dc373aa-ad9c-4214-b28d-3a2cfcd5601e.png">
+<img width="460" alt="ID_S3_EX1-5_3" src="https://user-images.githubusercontent.com/36104217/177056452-dbd06ab1-5bdd-43c4-b6f1-529715b72309.png">
+
+The detected objects will be provided with coordinates and properties in the three-channel BEV coordinate space since the model input is a three-channel BEV map. Therefore, the detections must be converted into metric coordinates in vehicle space before they can proceed in the processing pipeline.
+
+<img width="457" alt="ID_S3_EX1-5_4" src="https://user-images.githubusercontent.com/36104217/177056443-c5b80a37-d995-4642-a52d-251206a744f9.png">
+<img width="457" alt="ID_S3_EX1-5_5" src="https://user-images.githubusercontent.com/36104217/177056445-c28d17de-875e-4c3e-92e7-de587335cbad.png">
+
+## Step-4: Performance detection for 3D Object Detection
+
+
