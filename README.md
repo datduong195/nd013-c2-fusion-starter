@@ -194,9 +194,19 @@ Here are results:
 <img width="960" alt="ID_S1_EX2_9" src="https://user-images.githubusercontent.com/36104217/177055663-0fb19e75-0750-42f8-acfd-a57816716822.png">
 <img width="603" alt="ID_S1_EX2_2" src="https://user-images.githubusercontent.com/36104217/177055664-95745ded-8414-4f54-a7bd-29f245720e68.png">
 <img width="602" alt="ID_S1_EX2_3" src="https://user-images.githubusercontent.com/36104217/177055665-a63914a5-353e-4d7e-a362-4af4e1d56ddc.png">
-<img width="606" alt="ID_S1_EX2_4" src="https://user-images.githubusercontent.com/36104217/177055654-7e7e2c53-05bb-47f7-b198-c582d470587f.png">
-<img width="604" alt="ID_S1_EX2_5" src="https://user-images.githubusercontent.com/36104217/177055657-2613abdf-62b2-4826-9da1-d6dcab82bfad.png">
-<img width="923" alt="ID_S1_EX2_6" src="https://user-images.githubusercontent.com/36104217/177055658-74ca2491-396e-4f8d-a2a6-bf4f19fdd49f.png">
+
+A very close by vehicle can be observed below because of large reflection points:
+
+<img width="606" alt="ID_S1_EX2_4" src="https://user-images.githubusercontent.com/36104217/178330307-c956697d-65cd-43a9-952e-b5ba94909c65.png">
+
+A long vehicle, probably truck carrying a trailer:
+
+<img width="604" alt="ID_S1_EX2_5" src="https://user-images.githubusercontent.com/36104217/178330314-d98c4b47-ad91-41db-8b6f-c13314f4f519.png">
+
+In the next frame, the mentioned above truck is now ahead, while in the other side of the road, multiple vehicles are moving in opposite direction are clearly visible with Windshields and side mirrors can also be detected via Intensity channel:
+
+<img width="923" alt="ID_S1_EX2_6" src="https://user-images.githubusercontent.com/36104217/178330316-e1507f62-4e82-4ffe-907f-ac2867ba8047.png">
+
 
 From the results, objects like cars, traffic lights, trees  or buildings can be found. These objects are detected over intensity channel, so most of the time cars on the road are clearly be seen with rear and front directions. This will be very helpful in later task when applying object detection into these images.
 
