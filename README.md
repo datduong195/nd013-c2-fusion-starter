@@ -259,16 +259,48 @@ exec_tracking = [] # options are 'perform_tracking'
 exec_visualization = ['show_objects_in_bev_labels_in_camera'] # options are 'show_range_image', 'show_bev', 'show_pcl', 'show_labels_in_image', 'show_objects_and_labels_in_bev', 'show_objects_in_bev_labels_in_camera', 'show_tracks', 'show_detection_performance', 'make_tracking_movie'
 ```
 Here are results:
-
-<img width="367" alt="ID_S3_EX1-5_1" src="https://user-images.githubusercontent.com/36104217/177056448-a957dfa6-f58f-464e-8b67-54dbb150b9c0.png">
-<img width="460" alt="ID_S3_EX1-5_2" src="https://user-images.githubusercontent.com/36104217/177056450-6dc373aa-ad9c-4214-b28d-3a2cfcd5601e.png">
-<img width="460" alt="ID_S3_EX1-5_3" src="https://user-images.githubusercontent.com/36104217/177056452-dbd06ab1-5bdd-43c4-b6f1-529715b72309.png">
+<img width="419" alt="ID_S3_EX1-5_1" src="https://user-images.githubusercontent.com/36104217/178267764-68e378c0-41a1-47f0-b0a4-01a4a156aa73.png">
+<img width="457" alt="ID_S3_EX1-5_2" src="https://user-images.githubusercontent.com/36104217/178267767-db91140c-1db3-4df0-9b68-f31001099bb7.png">
+<img width="458" alt="ID_S3_EX1-5_3" src="https://user-images.githubusercontent.com/36104217/178267756-2b4f34f5-5b89-453c-b2c9-493dba5b73bb.png">
 
 The detected objects will be provided with coordinates and properties in the three-channel BEV coordinate space since the model input is a three-channel BEV map. Therefore, the detections must be converted into metric coordinates in vehicle space before they can proceed in the processing pipeline.
 
-<img width="457" alt="ID_S3_EX1-5_4" src="https://user-images.githubusercontent.com/36104217/177056443-c5b80a37-d995-4642-a52d-251206a744f9.png">
-<img width="457" alt="ID_S3_EX1-5_5" src="https://user-images.githubusercontent.com/36104217/177056445-c28d17de-875e-4c3e-92e7-de587335cbad.png">
+<img width="721" alt="ID_S3_EX1-5_4" src="https://user-images.githubusercontent.com/36104217/178267810-efa6d623-b443-4d50-8e7c-cc8c7feea806.png">
+<img width="457" alt="ID_S3_EX1-5_5" src="https://user-images.githubusercontent.com/36104217/178267815-777e14a8-f374-4660-9ee6-364f7e7a889c.png">
 
 ## Step-4: Performance detection for 3D Object Detection
+In this excersice, the IOUs of labels and detections are calculated to get the false positive and false negative values, then the performance is computed. The task is to compute the geometric overlap between the bounding boxes of labels and the detected objects as follow:
+
+1. If calculated IOU exceeds minimum threshold, add the detection with label
+2. Computing the degree of geometric overlap
+3. Detections of multiple objects that greater than set threshold
+4. Computing the false negative and false positive values
+5. Computing precision and recall with above the false positive and false negative values
+In "objdet_eval.py" where the precision and recall are calculated as functions of false positives and negatives:
+```
+    # compute positives and negatives for precision/recall
+    ## step 1 : compute the total number of positives present in the scene
+    all_positives = labels_valid.sum()
+    
+    ## step 2 : compute the number of false negatives
+    true_positives = len(iou)
+    false_negatives = all_positives- true_positives
+
+    ## step 3 : compute the number of false positives
+    false_positives = len(detections) - true_positives
+```
+precision = 0.9979381443298969, recall = 0.6453333333333333 
+
+With calculated values can be plotted as these graphs below:
+
+<img width="497" alt="ID_S4_EX1_1" src="https://user-images.githubusercontent.com/36104217/178269123-e12bbe7d-0f47-4fd0-bf90-6d175ee636cf.png">
+
+By setting "configs_det.use_labels_as_objects=True", results in precision and recall values as 1.This is shown in the following image:
+
+<img width="476" alt="ID_S4_EX1_2" src="https://user-images.githubusercontent.com/36104217/178269288-95d7d502-0fe1-490a-bc08-8fe2ff8ff62c.png">
+
+###Summarization of Lidar based 3D Object Detection
+
+This project gives a basic idea of using Lidar data and visualizing in 3D plane for object detection. For further analysis, it is crucial to convert range data to a point cloud using spatial volumes, points, or CNN networks. For 3D object detection, the use of resnet/darknet and YOLO to convert these high dimensional point cloud representations into object detections through bounding boxes is crucial. Understanding the effectiveness of Lidar based detection requires evaluating the performance using maximal IOU mapping, mAP, and representing the precision/recall of the bounding boxes.
 
 
