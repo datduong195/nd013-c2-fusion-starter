@@ -28,7 +28,7 @@ from tools.objdet_models.resnet.utils.evaluation_utils import decode, post_proce
 
 from tools.objdet_models.darknet.models.darknet2pytorch import Darknet as darknet
 from tools.objdet_models.darknet.utils.evaluation_utils import post_processing_v2
-
+from tools.objdet_models.resnet.utils.torch_utils import _sigmoid
 
 # load model-related parameters into an edict
 def load_configs_model(model_name='darknet', configs=None):
@@ -94,7 +94,7 @@ def load_configs_model(model_name='darknet', configs=None):
         configs.num_input_features = 4
         configs.model_path = os.path.join(parent_path, 'tools', 'objdet_models', 'resnet')
         configs.pretrained_filename = os.path.join(configs.model_path, 'pretrained', 'fpn_resnet_18_epoch_300.pth')
-
+        configs.min_iou = 0.5
         #######
         ####### ID_S3_EX1-3 END #######     
 
