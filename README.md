@@ -299,7 +299,7 @@ By setting "configs_det.use_labels_as_objects=True", results in precision and re
 
 <img width="476" alt="ID_S4_EX1_2" src="https://user-images.githubusercontent.com/36104217/178269288-95d7d502-0fe1-490a-bc08-8fe2ff8ff62c.png">
 
-###Summarization of Lidar based 3D Object Detection
+### Summarization of Lidar based 3D Object Detection
 
 This project gives a basic idea of using Lidar data and visualizing in 3D plane for object detection. For further analysis, it is crucial to convert range data to a point cloud using spatial volumes, points, or CNN networks. For 3D object detection, the use of resnet/darknet and YOLO to convert these high dimensional point cloud representations into object detections through bounding boxes is crucial. Understanding the effectiveness of Lidar based detection requires evaluating the performance using maximal IOU mapping, mAP, and representing the precision/recall of the bounding boxes.
 
