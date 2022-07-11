@@ -131,3 +131,176 @@ Parts of this project are based on the following repositories:
 
 ## License
 [License](LICENSE.md)
+### Project Overview
+This is Udacity Self Driving Nanodegree second course 3D Object Detection Midterm Project.
+## 3D Object Detection
+As in the previous course, Waymo Open Dataset will be used for this project. The Dataset contains data collected in real world and LiDAR cloud points will be used for 3D object detection.
+Dataset can be found here: https://console.cloud.google.com/storage/browser/waymo_open_dataset_v_1_2_0_individual_files
+There are requirements to achieve these goals:
+1. Converting dataset ranges channel to 8bit to visualize range and intensity image
+2. Create Bird Eye View (BEV) perspective for the points cloud which then lidar intensity values and normalized height values are applied to each BEV frame
+3. For 3d object detection, Complex Yolo(https://paperswithcode.com/paper/complex-yolo-real-time-3d-object-detection-on) and Super Fast and Accurate 3D Object Detection based on 3D LiDAR Point Clouds (https://github.com/maudzung/SFA3D) will be considered in the excersise to configure and initiate the model for Vehicles detections. Then applying Bounding Box and Polygon for each detected object
+4. Using pretrained data in tfrecords format files, calculate the Intersection over Union (IoU) with required minimum threshold, True/False Positive/Negative detections, Precision and Recall values.
+
+To use the project: execute file "python loop_over_dataset.py" with python3.
+Project reprequisite:
+python3
+numpy
+opencv-python
+protobuf
+easydict
+torch
+pillow
+matplotlib
+wxpython
+shapely
+tqdm
+open3d
+
+## Step 1: Compute LiDar cloud points from Range Image
+# ID_S1_EX1: 
+This task requires a preview of provided range images then convert range and intensity channel to 8bit format. Then using OpenCV to stack vertically and visualize  them in a single image, cropped it to +/- 90 degree to the foward x-axis. The implementation of function is done in "objdet_pcl.py"
+```
+# visualize range image
+def show_range_image(frame, lidar_name)
+```
+To test for this function, in "python loop_over_dataset.py" , config as follow:
+```
+exec_detection = [] # options are 'bev_from_pcl', 'detect_objects', 'validate_object_labels', 'measure_detection_performance'; options not in the list will be loaded from file
+exec_tracking = [] # options are 'perform_tracking'
+exec_visualization = ['show_range_image'] # options are 'show_range_image', 'show_bev', 'show_pcl', 'show_labels_in_image', 'show_objects_and_labels_in_bev', 'show_objects_in_bev_labels_in_camera', 'show_tracks', 'show_detection_performance', 'make_tracking_movie'
+```
+Here is the result:
+<img width="960" alt="ID_S1_EX1_cropped" src="https://user-images.githubusercontent.com/36104217/177055526-0ae86895-b676-4cd1-b848-0299a349922d.png">
+
+# ID_S1_EX2:
+Using Open3D library to visual a lidar cloud point on a 3D Model View and analyze what inside.
+The implementation of function is done in "objdet_pcl.py"
+```
+# visualize lidar point-cloud
+def show_pcl(pcl):
+```
+To test for this function, in "python loop_over_dataset.py" , config as follow:
+```
+exec_detection = [] # options are 'bev_from_pcl', 'detect_objects', 'validate_object_labels', 'measure_detection_performance'; options not in the list will be loaded from file
+exec_tracking = [] # options are 'perform_tracking'
+exec_visualization = ['show_pcl'] # options are 'show_range_image', 'show_bev', 'show_pcl', 'show_labels_in_image', 'show_objects_and_labels_in_bev', 'show_objects_in_bev_labels_in_camera', 'show_tracks', 'show_detection_performance', 'make_tracking_movie'
+```
+Here are results:
+
+<img width="602" alt="ID_S1_EX2" src="https://user-images.githubusercontent.com/36104217/177055725-96ea9ffc-76f9-4093-abbd-8d8a923da10e.png">
+<img width="960" alt="ID_S1_EX2_7" src="https://user-images.githubusercontent.com/36104217/177055732-db4ef017-9369-413f-8ac0-edc9bcf2064e.png">
+<img width="960" alt="ID_S1_EX2_8" src="https://user-images.githubusercontent.com/36104217/177055662-3a6c139a-7f1b-481b-a200-afa80c1ce00d.png">
+<img width="960" alt="ID_S1_EX2_9" src="https://user-images.githubusercontent.com/36104217/177055663-0fb19e75-0750-42f8-acfd-a57816716822.png">
+<img width="603" alt="ID_S1_EX2_2" src="https://user-images.githubusercontent.com/36104217/177055664-95745ded-8414-4f54-a7bd-29f245720e68.png">
+<img width="602" alt="ID_S1_EX2_3" src="https://user-images.githubusercontent.com/36104217/177055665-a63914a5-353e-4d7e-a362-4af4e1d56ddc.png">
+<img width="606" alt="ID_S1_EX2_4" src="https://user-images.githubusercontent.com/36104217/177055654-7e7e2c53-05bb-47f7-b198-c582d470587f.png">
+<img width="604" alt="ID_S1_EX2_5" src="https://user-images.githubusercontent.com/36104217/177055657-2613abdf-62b2-4826-9da1-d6dcab82bfad.png">
+<img width="923" alt="ID_S1_EX2_6" src="https://user-images.githubusercontent.com/36104217/177055658-74ca2491-396e-4f8d-a2a6-bf4f19fdd49f.png">
+
+From the results, objects like cars, traffic lights, trees  or buildings can be found. These objects are detected over intensity channel, so most of the time cars on the road are clearly be seen with rear and front directions. This will be very helpful in later task when applying object detection into these images.
+
+## Step-2: Creaate BEV from Lidar PCL
+In this step requires:
+1. Converting the coordinates to pixel values
+2. Assigning lidar intensity values to BEV mapping
+3. Using sorted point cloud lidar from the previous task
+4. Normalizing the height map in the BEV
+5. Compute and map the intensity values
+The implementation of function is done in "objdet_pcl.py"
+```
+# create birds-eye view of lidar data
+def bev_from_pcl(lidar_pcl, configs):
+```
+To test for this function, in "python loop_over_dataset.py" , config as follow:
+```
+exec_detection = ['bev_from_pcl'] # options are 'bev_from_pcl', 'detect_objects', 'validate_object_labels', 'measure_detection_performance'; options not in the list will be loaded from file
+exec_tracking = [] # options are 'perform_tracking'
+exec_visualization = [] # options are 'show_range_image', 'show_bev', 'show_pcl', 'show_labels_in_image', 'show_objects_and_labels_in_bev', 'show_objects_in_bev_labels_in_camera', 'show_tracks', 'show_detection_performance', 'make_tracking_movie'
+```
+Here are results:
+Lidar Cloud Point
+
+<img width="380" alt="ID_S2_EX1_1" src="https://user-images.githubusercontent.com/36104217/177056155-537d2d51-0061-4070-8c7a-c81ca1a39253.png">
+<img width="333" alt="ID_S2_EX1_2" src="https://user-images.githubusercontent.com/36104217/177056156-8f962703-bb44-4bed-b257-6c363d413a6f.png">
+
+Intensity Channel
+
+<img width="455" alt="ID_S2_EX2_1" src="https://user-images.githubusercontent.com/36104217/177056195-1b4c1bfc-d1cc-4e5c-9569-2fbeb847c82c.png">
+<img width="458" alt="ID_S2_EX2_2" src="https://user-images.githubusercontent.com/36104217/177056197-d8265ab3-1e1e-4fd4-a958-d50a7724e4e2.png">
+
+Normalized height Channel
+
+<img width="458" alt="ID_S2_EX3_2" src="https://user-images.githubusercontent.com/36104217/177056246-5ec4b24e-0323-457f-ad64-53bcc5ea83e0.png">
+<img width="458" alt="ID_S2_EX3_1" src="https://user-images.githubusercontent.com/36104217/177056247-7f1443f1-0dc7-4497-9ed2-7cf72af54692.png">
+
+## Step-3: Model Based Object Detection in BEV Image
+In this step, SFA3D model will be configured and initialized with a pretrained data to perform vehicle detections and apply bounding boxes and 3D polygons. Futher exploration to use this model can be found here: https://github.com/maudzung/SFA3D
+1. Instantiating the FPN resnet model from the cloned repository configs
+2. Extracting 3d bounding boxes from the responses
+3. Transforming the pixel to vehicle coordinates
+4. Model output tuned to the bounding box format [class-id, x, y, z, h, w, l, yaw]
+The implementation of function is done in "objdet_detect.py"
+```
+# load model-related parameters into an edict
+def load_configs_model(model_name='darknet', configs=None)
+
+# create model according to selected model type
+def create_model(configs)
+
+# detect trained objects in birds-eye view
+def detect_objects(input_bev_maps, model, configs)
+
+```
+To test for this function, in "python loop_over_dataset.py" , config as follow:
+```
+exec_detection = ['bev_from_pcl', 'detect_objects'] # options are 'bev_from_pcl', 'detect_objects', 'validate_object_labels', 'measure_detection_performance'; options not in the list will be loaded from file
+exec_tracking = [] # options are 'perform_tracking'
+exec_visualization = ['show_objects_in_bev_labels_in_camera'] # options are 'show_range_image', 'show_bev', 'show_pcl', 'show_labels_in_image', 'show_objects_and_labels_in_bev', 'show_objects_in_bev_labels_in_camera', 'show_tracks', 'show_detection_performance', 'make_tracking_movie'
+```
+Here are results:
+<img width="419" alt="ID_S3_EX1-5_1" src="https://user-images.githubusercontent.com/36104217/178267764-68e378c0-41a1-47f0-b0a4-01a4a156aa73.png">
+<img width="457" alt="ID_S3_EX1-5_2" src="https://user-images.githubusercontent.com/36104217/178267767-db91140c-1db3-4df0-9b68-f31001099bb7.png">
+<img width="458" alt="ID_S3_EX1-5_3" src="https://user-images.githubusercontent.com/36104217/178267756-2b4f34f5-5b89-453c-b2c9-493dba5b73bb.png">
+
+The detected objects will be provided with coordinates and properties in the three-channel BEV coordinate space since the model input is a three-channel BEV map. Therefore, the detections must be converted into metric coordinates in vehicle space before they can proceed in the processing pipeline.
+
+<img width="721" alt="ID_S3_EX1-5_4" src="https://user-images.githubusercontent.com/36104217/178267810-efa6d623-b443-4d50-8e7c-cc8c7feea806.png">
+<img width="457" alt="ID_S3_EX1-5_5" src="https://user-images.githubusercontent.com/36104217/178267815-777e14a8-f374-4660-9ee6-364f7e7a889c.png">
+
+## Step-4: Performance detection for 3D Object Detection
+In this excersice, the IOUs of labels and detections are calculated to get the false positive and false negative values, then the performance is computed. The task is to compute the geometric overlap between the bounding boxes of labels and the detected objects as follow:
+
+1. If calculated IOU exceeds minimum threshold, add the detection with label
+2. Computing the degree of geometric overlap
+3. Detections of multiple objects that greater than set threshold
+4. Computing the false negative and false positive values
+5. Computing precision and recall with above the false positive and false negative values
+In "objdet_eval.py" where the precision and recall are calculated as functions of false positives and negatives:
+```
+    # compute positives and negatives for precision/recall
+    ## step 1 : compute the total number of positives present in the scene
+    all_positives = labels_valid.sum()
+    
+    ## step 2 : compute the number of false negatives
+    true_positives = len(iou)
+    false_negatives = all_positives- true_positives
+
+    ## step 3 : compute the number of false positives
+    false_positives = len(detections) - true_positives
+```
+precision = 0.9979381443298969, recall = 0.6453333333333333 
+
+With calculated values can be plotted as these graphs below:
+
+<img width="497" alt="ID_S4_EX1_1" src="https://user-images.githubusercontent.com/36104217/178269123-e12bbe7d-0f47-4fd0-bf90-6d175ee636cf.png">
+
+By setting "configs_det.use_labels_as_objects=True", results in precision and recall values as 1.This is shown in the following image:
+
+<img width="476" alt="ID_S4_EX1_2" src="https://user-images.githubusercontent.com/36104217/178269288-95d7d502-0fe1-490a-bc08-8fe2ff8ff62c.png">
+
+###Summarization of Lidar based 3D Object Detection
+
+This project gives a basic idea of using Lidar data and visualizing in 3D plane for object detection. For further analysis, it is crucial to convert range data to a point cloud using spatial volumes, points, or CNN networks. For 3D object detection, the use of resnet/darknet and YOLO to convert these high dimensional point cloud representations into object detections through bounding boxes is crucial. Understanding the effectiveness of Lidar based detection requires evaluating the performance using maximal IOU mapping, mAP, and representing the precision/recall of the bounding boxes.
+
+
