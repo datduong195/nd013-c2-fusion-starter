@@ -34,21 +34,40 @@ class Track:
         # unassigned measurement transformed from sensor to vehicle coordinates
         # - initialize track state and track score with appropriate values
         ############
+        position_sensor = np.ones((4, 1)) # homogeneous coordinates
+        position_sensor[0:3] = meas.z[0:3] 
+        position_vehicle = meas.sensor.sens_to_veh*position_sensor
 
-        self.x = np.matrix([[49.53980697],
-                        [ 3.41006279],
-                        [ 0.91790581],
-                        [ 0.        ],
-                        [ 0.        ],
-                        [ 0.        ]])
-        self.P = np.matrix([[9.0e-02, 0.0e+00, 0.0e+00, 0.0e+00, 0.0e+00, 0.0e+00],
-                        [0.0e+00, 9.0e-02, 0.0e+00, 0.0e+00, 0.0e+00, 0.0e+00],
-                        [0.0e+00, 0.0e+00, 6.4e-03, 0.0e+00, 0.0e+00, 0.0e+00],
-                        [0.0e+00, 0.0e+00, 0.0e+00, 2.5e+03, 0.0e+00, 0.0e+00],
-                        [0.0e+00, 0.0e+00, 0.0e+00, 0.0e+00, 2.5e+03, 0.0e+00],
-                        [0.0e+00, 0.0e+00, 0.0e+00, 0.0e+00, 0.0e+00, 2.5e+01]])
-        self.state = 'confirmed'
-        self.score = 0
+        # save initial state from measurement
+        self.x = np.zeros((6,1))
+        self.x[0:3] = position_vehicle[0:3]
+        
+        P_position = M_rot * meas.R * np.transpose(M_rot)
+
+    
+        P_velocity = np.matrix([[params.sigma_p44**2, 0, 0],
+                        [0, params.sigma_p55**2, 0],
+                        [0, 0, params.sigma_p66**2]])
+
+        # overall covariance initialization
+        self.P = np.zeros((6, 6))
+        self.P[0:3, 0:3] = P_position
+        self.P[3:6, 3:6] = P_velocity
+
+        # self.x = np.matrix([[49.53980697],
+        #                 [ 3.41006279],
+        #                 [ 0.91790581],
+        #                 [ 0.        ],
+        #                 [ 0.        ],
+        #                 [ 0.        ]])
+        # self.P = np.matrix([[9.0e-02, 0.0e+00, 0.0e+00, 0.0e+00, 0.0e+00, 0.0e+00],
+        #                 [0.0e+00, 9.0e-02, 0.0e+00, 0.0e+00, 0.0e+00, 0.0e+00],
+        #                 [0.0e+00, 0.0e+00, 6.4e-03, 0.0e+00, 0.0e+00, 0.0e+00],
+        #                 [0.0e+00, 0.0e+00, 0.0e+00, 2.5e+03, 0.0e+00, 0.0e+00],
+        #                 [0.0e+00, 0.0e+00, 0.0e+00, 0.0e+00, 2.5e+03, 0.0e+00],
+        #                 [0.0e+00, 0.0e+00, 0.0e+00, 0.0e+00, 0.0e+00, 2.5e+01]])
+        self.state =  'initialized'
+        self.score = 1./params.window
         
         ############
         # END student code
@@ -73,7 +92,7 @@ class Track:
         
     def update_attributes(self, meas):
         # use exponential sliding average to estimate dimensions and orientation
-        if meas.sensor.name == 'lidar':
+        if(meas.sensor.name == 'lidar'):
             c = params.weight_dim
             self.width = c*meas.width + (1 - c)*self.width
             self.length = c*meas.length + (1 - c)*self.length
@@ -103,14 +122,20 @@ class Trackmanagement:
         # decrease score for unassigned tracks
         for i in unassigned_tracks:
             track = self.track_list[i]
-            # check visibility    
-            if meas_list: # if not empty
-                if meas_list[0].sensor.in_fov(track.x):
+            # check visibility  
+            if (meas_list): # if not empty
+                if (meas_list[0].sensor.in_fov(track.x)):
                     # your code goes here
-                    pass 
+                    track.state =  'tentative'
+                    if (track.score > params.delete_threshold + 1):
+                        track.score = params.delete_threshold + 1
+                    track.score -= 1./params.window
 
         # delete old tracks   
-
+        for track in self.track_list:
+            if track.score <= params.delete_threshold:
+                if track.P[0, 0] >= params.max_P or track.P[1, 1] >= params.max_P:
+                    self.delete_track(track)
         ############
         # END student code
         ############ 
@@ -139,9 +164,11 @@ class Trackmanagement:
         # - increase track score
         # - set track state to 'tentative' or 'confirmed'
         ############
-
-        pass
-        
+        track.score += 1./params.window
+        if track.score > params.confirmed_threshold:
+            track.state =  'confirmed'
+        else:
+            track.state =  'tentative' 
         ############
         # END student code
         ############ 
