@@ -194,9 +194,19 @@ Here are results:
 <img width="960" alt="ID_S1_EX2_9" src="https://user-images.githubusercontent.com/36104217/177055663-0fb19e75-0750-42f8-acfd-a57816716822.png">
 <img width="603" alt="ID_S1_EX2_2" src="https://user-images.githubusercontent.com/36104217/177055664-95745ded-8414-4f54-a7bd-29f245720e68.png">
 <img width="602" alt="ID_S1_EX2_3" src="https://user-images.githubusercontent.com/36104217/177055665-a63914a5-353e-4d7e-a362-4af4e1d56ddc.png">
-<img width="606" alt="ID_S1_EX2_4" src="https://user-images.githubusercontent.com/36104217/177055654-7e7e2c53-05bb-47f7-b198-c582d470587f.png">
-<img width="604" alt="ID_S1_EX2_5" src="https://user-images.githubusercontent.com/36104217/177055657-2613abdf-62b2-4826-9da1-d6dcab82bfad.png">
-<img width="923" alt="ID_S1_EX2_6" src="https://user-images.githubusercontent.com/36104217/177055658-74ca2491-396e-4f8d-a2a6-bf4f19fdd49f.png">
+
+A very close by vehicle can be observed below because of large reflection points:
+
+<img width="606" alt="ID_S1_EX2_4" src="https://user-images.githubusercontent.com/36104217/178330307-c956697d-65cd-43a9-952e-b5ba94909c65.png">
+
+A long vehicle, probably truck carrying a trailer:
+
+<img width="604" alt="ID_S1_EX2_5" src="https://user-images.githubusercontent.com/36104217/178330314-d98c4b47-ad91-41db-8b6f-c13314f4f519.png">
+
+In the next frame, the mentioned above truck is now ahead, while in the other side of the road, multiple vehicles are moving in opposite direction are clearly visible with Windshields and side mirrors can also be detected via Intensity channel:
+
+<img width="923" alt="ID_S1_EX2_6" src="https://user-images.githubusercontent.com/36104217/178330316-e1507f62-4e82-4ffe-907f-ac2867ba8047.png">
+
 
 From the results, objects like cars, traffic lights, trees  or buildings can be found. These objects are detected over intensity channel, so most of the time cars on the road are clearly be seen with rear and front directions. This will be very helpful in later task when applying object detection into these images.
 
@@ -259,6 +269,7 @@ exec_tracking = [] # options are 'perform_tracking'
 exec_visualization = ['show_objects_in_bev_labels_in_camera'] # options are 'show_range_image', 'show_bev', 'show_pcl', 'show_labels_in_image', 'show_objects_and_labels_in_bev', 'show_objects_in_bev_labels_in_camera', 'show_tracks', 'show_detection_performance', 'make_tracking_movie'
 ```
 Here are results:
+
 <img width="419" alt="ID_S3_EX1-5_1" src="https://user-images.githubusercontent.com/36104217/178267764-68e378c0-41a1-47f0-b0a4-01a4a156aa73.png">
 <img width="457" alt="ID_S3_EX1-5_2" src="https://user-images.githubusercontent.com/36104217/178267767-db91140c-1db3-4df0-9b68-f31001099bb7.png">
 <img width="458" alt="ID_S3_EX1-5_3" src="https://user-images.githubusercontent.com/36104217/178267756-2b4f34f5-5b89-453c-b2c9-493dba5b73bb.png">
@@ -299,7 +310,7 @@ By setting "configs_det.use_labels_as_objects=True", results in precision and re
 
 <img width="476" alt="ID_S4_EX1_2" src="https://user-images.githubusercontent.com/36104217/178269288-95d7d502-0fe1-490a-bc08-8fe2ff8ff62c.png">
 
-###Summarization of Lidar based 3D Object Detection
+### Summarization of Lidar based 3D Object Detection
 
 This project gives a basic idea of using Lidar data and visualizing in 3D plane for object detection. For further analysis, it is crucial to convert range data to a point cloud using spatial volumes, points, or CNN networks. For 3D object detection, the use of resnet/darknet and YOLO to convert these high dimensional point cloud representations into object detections through bounding boxes is crucial. Understanding the effectiveness of Lidar based detection requires evaluating the performance using maximal IOU mapping, mAP, and representing the precision/recall of the bounding boxes.
 
