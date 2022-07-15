@@ -45,10 +45,8 @@ class Association:
         for track in track_list:
             res = []
             for measure in meas_list:
-                MHD = self.MHD(track, measure, KF)
-                sensor = measure.sensor
-                if (self.gating(MHD, sensor)):
-                    res.append(MHD)
+                if (self.gating(self.MHD(track, measure, KF), measure.sensor)):
+                    res.append(self.MHD(track, measure, KF))
                 else:
                     res.append(np.inf)
             association_matrix.append(res)
@@ -104,21 +102,20 @@ class Association:
         # TODO Step 3: return True if measurement lies inside gate, otherwise False
         ############
         df = None
-        gate_val = None
-        if (sensor.name == 'lidar'):
-            #While fine tuning the algorihm, we find that it's better to have a larger gate threshold for lidar 
-            #which means current lidar noise is a bit underestimated
-            df = 2 
-            gate_val = params.gating_threshold
+        gate_val = chi2.ppf(params.gating_threshold, sensor.dim_meas)
+        # if (sensor.name == 'lidar'):
+        #     #While fine tuning the algorihm, we find that it's better to have a larger gate threshold for lidar 
+        #     #which means current lidar noise is a bit underestimated
+        #     df = 2 
         
-        if (sensor.name == 'camera'):
-            gate_val = params.gating_threshold
-            df = 1
-        x= MHD * MHD
-        per = chi2.cdf(x, df)
-        if (sensor.name == 'lidar'):
-            print("lidar chisqr = {}".format(per))
-        if (per <  gate_val):
+        # if (sensor.name == 'camera'):
+        #     # gate_val = params.gating_threshold
+        #     df = 1
+        # x= MHD * MHD
+        # per = chi2.cdf(x, df)
+        # if (sensor.name == 'lidar'):
+        #     print("lidar chisqr = {}".format(per))
+        if (MHD <  gate_val):
             return True
         else:
             return False        
@@ -160,7 +157,7 @@ class Association:
                 continue
             
             # Kalman update
-            print('update track_', track.id, 'with', meas_list[ind_meas].sensor.name, 'measurement', ind_meas)
+            print('update track', track.id, 'with', meas_list[ind_meas].sensor.name, 'measurement', ind_meas)
             KF.update(track, meas_list[ind_meas])
             
             # update score and track state 
@@ -173,4 +170,4 @@ class Association:
         manager.manage_tracks(self.unassigned_tracks, self.unassigned_meas, meas_list)
         
         for track in manager.track_list:            
-            print('track_', track.id, 'score =', track.score)
+            print('track', track.id, 'score =', track.score)
