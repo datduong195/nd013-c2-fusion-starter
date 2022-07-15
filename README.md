@@ -131,7 +131,7 @@ Parts of this project are based on the following repositories:
 
 ## License
 [License](LICENSE.md)
-## Midterm Project Overview
+# Midterm Project Overview
 This is Udacity Self Driving Nanodegree second course 3D Object Detection Midterm Project.
 ## 3D Object Detection
 As in the previous course, Waymo Open Dataset will be used for this project. The Dataset contains data collected in real world and LiDAR cloud points will be used for 3D object detection.
@@ -158,7 +158,7 @@ tqdm
 open3d
 
 ## Step 1: Compute LiDar cloud points from Range Image
-# ID_S1_EX1: 
+### ID_S1_EX1: 
 This task requires a preview of provided range images then convert range and intensity channel to 8bit format. Then using OpenCV to stack vertically and visualize  them in a single image, cropped it to +/- 90 degree to the foward x-axis. The implementation of function is done in "objdet_pcl.py"
 ```
 # visualize range image
@@ -173,7 +173,7 @@ exec_visualization = ['show_range_image'] # options are 'show_range_image', 'sho
 Here is the result:
 <img width="960" alt="ID_S1_EX1_cropped" src="https://user-images.githubusercontent.com/36104217/177055526-0ae86895-b676-4cd1-b848-0299a349922d.png">
 
-# ID_S1_EX2:
+### ID_S1_EX2:
 Using Open3D library to visual a lidar cloud point on a 3D Model View and analyze what inside.
 The implementation of function is done in "objdet_pcl.py"
 ```
@@ -314,7 +314,7 @@ By setting "configs_det.use_labels_as_objects=True", results in precision and re
 
 This project gives a basic idea of using Lidar data and visualizing in 3D plane for object detection. For further analysis, it is crucial to convert range data to a point cloud using spatial volumes, points, or CNN networks. For 3D object detection, the use of resnet/darknet and YOLO to convert these high dimensional point cloud representations into object detections through bounding boxes is crucial. Understanding the effectiveness of Lidar based detection requires evaluating the performance using maximal IOU mapping, mAP, and representing the precision/recall of the bounding boxes.
 
-## Final Project Overview
+# Final Project Overview
 This is Udacity Self Driving Nanodegree second course 3D Object Detection Final Project.
 
 ## Sensor Fusion and Object detection
