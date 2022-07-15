@@ -381,6 +381,8 @@ RSME of tracking with Camera mesurement:
 
 <img width="905" alt="Final_ID_S4_1" src="https://user-images.githubusercontent.com/36104217/179197140-b235a996-9cb0-4784-9050-59ca992a0e3a.png">
 
+There is a video generated for live tracking in image folder for better visisualization of the result: img/my_tracking_results.avi.tar.gz
+
 ## Benefits in Camera-Lidar Fusion tracking over Lidar-only tracking
 
 Theoretically, adding more sensors will result in a better accuracy due to the reduction in uncertainty with each measurement update. As can be seen in these above results, there is no significant improvements when comparing between performance of Lidar Only system and Camera - Lidar Sensor Fusion system.
