@@ -131,7 +131,7 @@ Parts of this project are based on the following repositories:
 
 ## License
 [License](LICENSE.md)
-### Project Overview
+## Midterm Project Overview
 This is Udacity Self Driving Nanodegree second course 3D Object Detection Midterm Project.
 ## 3D Object Detection
 As in the previous course, Waymo Open Dataset will be used for this project. The Dataset contains data collected in real world and LiDAR cloud points will be used for 3D object detection.
@@ -313,5 +313,96 @@ By setting "configs_det.use_labels_as_objects=True", results in precision and re
 ### Summarization of Lidar based 3D Object Detection
 
 This project gives a basic idea of using Lidar data and visualizing in 3D plane for object detection. For further analysis, it is crucial to convert range data to a point cloud using spatial volumes, points, or CNN networks. For 3D object detection, the use of resnet/darknet and YOLO to convert these high dimensional point cloud representations into object detections through bounding boxes is crucial. Understanding the effectiveness of Lidar based detection requires evaluating the performance using maximal IOU mapping, mAP, and representing the precision/recall of the bounding boxes.
+
+## Final Project Overview
+This is Udacity Self Driving Nanodegree second course 3D Object Detection Final Project.
+
+## Sensor Fusion and Object detection
+
+Using Waymo's real-world data and applied an extended Kalman fusion filter for tracking several vehicles in this project. The following are the tasks completed:
+- Building Kalman Filter system to track an object
+- Object tracking and updating tracks (creating and deleting)
+- Understanding the association between the data (sensor)
+- Added camera sensor fusion based on lidar fusion 
+
+Dataset can be found here: https://console.cloud.google.com/storage/browser/waymo_open_dataset_v_1_2_0_individual_files
+To use the project: execute file "python loop_over_dataset.py" with python3.
+Project reprequisite:
+python3
+numpy
+opencv-python
+protobuf
+easydict
+torch
+pillow
+matplotlib
+wxpython
+shapely
+tqdm
+open3d
+
+## Step-1: Extended Kalman Filter
+
+The first step involves implementing Extended Kalman update for a single track. By setting up the required matrices and implementation EKF equation in the predict fucntion in filter.py file.
++ Design the system states [x, y, z, vx, vy, vz], process model, and constant velocity model.
++ Calculate the matrix (system matrix) for the 3D process models with constant velocity and noise covariances. This is required for computing state h(x) and Jacobian H.
++ For current state calculation, h(x), and the Jacobian H function are evaluated.
++ The Kalman gain is computed and is used for updating the state and covariance.
+The images below show the analysis of RMSE with current time for single track:
+
+<img width="809" alt="Final_ID_S1_1" src="https://user-images.githubusercontent.com/36104217/179194375-d583e39a-aaff-4e81-928e-5cfcb197b535.png">
+<img width="916" alt="Final_ID_S1_2" src="https://user-images.githubusercontent.com/36104217/179194379-2b97237a-dc1b-47d2-9725-abd675233cda.png">
+
+## Step-2: Track Management
+
+In this second step, implemntation of track management for a single track then the measurement is associated with the track. If the measurement is consistent then it will become a confirmed track. Otherwise, it's considered as tentative and quickly get deleted. If the score is below certain three-point and the state balance is greater than a threshold , then the track is not removed for further consideration. 
+The results show a slight reductiong of RSME between ground truth and tracked vehicle:
+
+<img width="904" alt="Final_ID_S2_1" src="https://user-images.githubusercontent.com/36104217/179195274-94869840-e832-4b53-ba07-5ae2e8d81849.png">
+<img width="885" alt="Final_ID_S2_2" src="https://user-images.githubusercontent.com/36104217/179195277-42b66801-8db3-49ec-a985-c3075eb9bb60.png">
+
+## Step-3: Data Association
+
+In this step, the closest neighbor association correctly matches several measurements to several tracks. In association.py, data association is introduced. Tracking is extended to multiple tracks which are aligned to each respective measurement according to Mahalanobis distance between the tracks and the measurements. Later gating is applied to filter out measurement association to the track.
+
+<img width="905" alt="Final_ID_S3_2" src="https://user-images.githubusercontent.com/36104217/179195979-50d69a40-f2c4-4fcc-98d7-ae1f55e48e1c.png">
+<img width="910" alt="Final_ID_S3_4" src="https://user-images.githubusercontent.com/36104217/179195983-ed95c870-6725-45e7-9304-86275cb3f9cf.png">
+
+This RSME is taken for later comparision with applying sensor fusion between lidar and camera in step 4 
+<img width="909" alt="Final_ID_S3_1" src="https://user-images.githubusercontent.com/36104217/179195984-cd02d00f-e258-4e91-89be-661ecd7e7bc7.png">
+
+## Step-4: Camera Sensor fusion
+
+Finally, camera measurement is added to the measurement update step. This helps improving the tracking accuracy. The first order of filtering of track association is by checking the current tracked object is visible to the camera. Then it will be passed along witht the lidar measurement for updating the track.
+
+The implementation consists of projection matrix which converts the points from 3d space into 2d geometry. The partial derivatives (x,y,z) are used for measuring the model in parameters (u,v). The noise is also measured (R).If the tracking status is in FOV(Field of View) then the measurement-track pair can be accepted else it will be rejected.
+
+RSME of tracking with Camera mesurement:
+
+<img width="905" alt="Final_ID_S4_1" src="https://user-images.githubusercontent.com/36104217/179197140-b235a996-9cb0-4784-9050-59ca992a0e3a.png">
+
+## Benefits in Camera-Lidar Fusion tracking over Lidar-only tracking
+
+Theoretically, adding more sensors will result in a better accuracy due to the reduction in uncertainty with each measurement update. As can be seen in these above results, there is no significant improvements when comparing between performance of Lidar Only system and Camera - Lidar Sensor Fusion system.
+
+## Difficulties
+
+All the steps in this project are well descripted by the lecturers and student can get the ideas of what to be done.
+However, it's quite challenge for implementing camera measurement, when projecting a 3D point to 2D point and transformation in the camera axis. This requires a thorough understanding of the concepts mentioned in previous courses.
+
+In the provided loop_over_dataset.py, there are some outdated functions leading to some bugs as: requires different number of arguments or missing variable defintitions, etc. But through reading command line output from Python shell, it's can easily be debugged and fixed.
+
+## Real-life challenges
+
+Both camera and lidar sensor depend on the environment for measurement. As observed during the project, the scenario is quite bright, clear and very less noises due by foggy or rainy conditions.
+All of the sensors reference posistions might be adjusted to have a best accurate calculation, since vehicle might have misalignment or deformation leading to unexpected sensors positions.
+
+## Future Improvement
+
+There could be a possibility to combine multiple cameras into a unified system that could provide a depth dimension into its original 2D data. This will eliminate the need of projection from 3D to 2D of Lidar data, hence improve the optimization of calculation performance.
+Or with Vehicle to X (V2X) system, multiples vehicles in the same region can communicate and tranfer sensor data between which can drastically improve the data accuracy. Futhermore, tracking performance can be push to the limit due to real time position of each vehicle is updated and broadcasted to others.
+
+
+
 
 
