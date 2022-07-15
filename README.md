@@ -359,7 +359,6 @@ In this second step, implemntation of track management for a single track then t
 The results show a slight reductiong of RSME between ground truth and tracked vehicle:
 
 <img width="904" alt="Final_ID_S2_1" src="https://user-images.githubusercontent.com/36104217/179195274-94869840-e832-4b53-ba07-5ae2e8d81849.png">
-<img width="885" alt="Final_ID_S2_2" src="https://user-images.githubusercontent.com/36104217/179195277-42b66801-8db3-49ec-a985-c3075eb9bb60.png">
 
 ## Step-3: Data Association
 
@@ -369,6 +368,7 @@ In this step, the closest neighbor association correctly matches several measure
 <img width="910" alt="Final_ID_S3_4" src="https://user-images.githubusercontent.com/36104217/179195983-ed95c870-6725-45e7-9304-86275cb3f9cf.png">
 
 This RSME is taken for later comparision with applying sensor fusion between lidar and camera in step 4 
+
 <img width="909" alt="Final_ID_S3_1" src="https://user-images.githubusercontent.com/36104217/179195984-cd02d00f-e258-4e91-89be-661ecd7e7bc7.png">
 
 ## Step-4: Camera Sensor fusion
